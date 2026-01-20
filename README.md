@@ -153,7 +153,7 @@ This is a framework/template. Developers are responsible for:
 ---
 ## Thank You
 jbeghtol Justin Beghtol
-Who Founded The Open Moxie Project, Wuthout him this would not exist.
+Who Founded The Open Moxie Project, Without his orginal concept this would not exist.
 Orginal OpenMoxie: https://github.com/jbeghtol/openmoxie
 
 **Note**: This is the base framework only. AI models, API keys, and proprietary content systems have been removed for public distribution.
