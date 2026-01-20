@@ -1,0 +1,270 @@
+<Window x:Class="SimpleMoxieSwitcher.Views.SettingsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Settings"
+        Height="650" Width="900"
+        WindowStartupLocation="CenterOwner"
+        Background="#1A1A2E">
+
+    <Window.Resources>
+        <Style x:Key="SettingsSectionHeader" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#00FFFF"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,20,0,10"/>
+        </Style>
+
+        <Style x:Key="SettingItem" TargetType="Border">
+            <Setter Property="Background" Value="#2A2A3E"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#0F0F1E" Padding="20">
+            <TextBlock Text="Settings"
+                     Foreground="White"
+                     FontSize="24"
+                     FontWeight="SemiBold"/>
+        </Border>
+
+        <!-- Settings Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="40,20">
+                <!-- Server Configuration -->
+                <TextBlock Text="Server Configuration" Style="{StaticResource SettingsSectionHeader}"/>
+
+                <Border Style="{StaticResource SettingItem}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Server URL:"
+                                 Foreground="White"
+                                 VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1"
+                               Text="{Binding ServerUrl}"
+                               Background="#1A1A2E"
+                               Foreground="White"
+                               BorderBrush="#00FFFF"
+                               BorderThickness="1"
+                               Padding="8"/>
+                    </Grid>
+                </Border>
+
+                <Border Style="{StaticResource SettingItem}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="API Key:"
+                                 Foreground="White"
+                                 VerticalAlignment="Center"/>
+                        <PasswordBox Grid.Column="1"
+                                   Password="{Binding ApiKey}"
+                                   Background="#1A1A2E"
+                                   Foreground="White"
+                                   BorderBrush="#00FFFF"
+                                   BorderThickness="1"
+                                   Padding="8"/>
+                    </Grid>
+                </Border>
+
+                <!-- Audio Settings -->
+                <TextBlock Text="Audio Settings" Style="{StaticResource SettingsSectionHeader}"/>
+
+                <Border Style="{StaticResource SettingItem}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Volume:"
+                                 Foreground="White"
+                                 VerticalAlignment="Center"/>
+                        <Grid Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="50"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Slider Value="{Binding Volume}"
+                                  Minimum="0" Maximum="100"
+                                  TickFrequency="10"
+                                  IsSnapToTickEnabled="True"/>
+                            <TextBlock Grid.Column="1"
+                                     Text="{Binding Volume, StringFormat={}{0}%}"
+                                     Foreground="White"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Border Style="{StaticResource SettingItem}">
+                    <CheckBox Content="Enable Voice Output"
+                            IsChecked="{Binding EnableVoice}"
+                            Foreground="White"/>
+                </Border>
+
+                <!-- Display Settings -->
+                <TextBlock Text="Display Settings" Style="{StaticResource SettingsSectionHeader}"/>
+
+                <Border Style="{StaticResource SettingItem}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Theme:"
+                                 Foreground="White"
+                                 VerticalAlignment="Center"/>
+                        <ComboBox Grid.Column="1"
+                                ItemsSource="{Binding Themes}"
+                                SelectedItem="{Binding SelectedTheme}"
+                                Background="#1A1A2E"
+                                Foreground="White"/>
+                    </Grid>
+                </Border>
+
+                <Border Style="{StaticResource SettingItem}">
+                    <CheckBox Content="Enable Animations"
+                            IsChecked="{Binding EnableAnimations}"
+                            Foreground="White"/>
+                </Border>
+
+                <!-- Advanced Settings -->
+                <TextBlock Text="Advanced" Style="{StaticResource SettingsSectionHeader}"/>
+
+                <Border Style="{StaticResource SettingItem}">
+                    <CheckBox Content="Enable Debug Mode"
+                            IsChecked="{Binding DebugMode}"
+                            Foreground="White"/>
+                </Border>
+
+                <Border Style="{StaticResource SettingItem}">
+                    <CheckBox Content="Auto-start with Windows"
+                            IsChecked="{Binding AutoStart}"
+                            Foreground="White"/>
+                </Border>
+
+                <Border Style="{StaticResource SettingItem}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Cache Size (MB):"
+                                 Foreground="White"
+                                 VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1"
+                               Text="{Binding CacheSize}"
+                               Background="#1A1A2E"
+                               Foreground="White"
+                               BorderBrush="#00FFFF"
+                               BorderThickness="1"
+                               Padding="8"/>
+                    </Grid>
+                </Border>
+
+                <!-- Reset Section -->
+                <TextBlock Text="Reset" Style="{StaticResource SettingsSectionHeader}"/>
+
+                <Button Content="Reset to Defaults"
+                      Command="{Binding ResetCommand}"
+                      Width="200"
+                      Height="40"
+                      HorizontalAlignment="Left">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="5"
+                                  Background="#FF4444">
+                                <TextBlock Text="{TemplateBinding Content}"
+                                         Foreground="White"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         FontWeight="SemiBold"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Bottom Actions -->
+        <Border Grid.Row="2" Background="#0F0F1E" Padding="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                         Text="{Binding StatusMessage}"
+                         Foreground="#00FF88"
+                         VerticalAlignment="Center"/>
+
+                <Button Grid.Column="1"
+                      Content="Save"
+                      Command="{Binding SaveCommand}"
+                      Width="100" Height="35"
+                      Margin="0,0,10,0">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="5">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="#00FF88" Offset="0"/>
+                                        <GradientStop Color="#00AA55" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <TextBlock Text="{TemplateBinding Content}"
+                                         Foreground="White"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         FontWeight="SemiBold"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button Grid.Column="2"
+                      Content="Cancel"
+                      Click="CancelButton_Click"
+                      Width="100" Height="35">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="5"
+                                  Background="#333344">
+                                <TextBlock Text="{TemplateBinding Content}"
+                                         Foreground="White"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

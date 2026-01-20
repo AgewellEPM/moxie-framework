@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SimpleMoxieSwitcher
+GenericName=OpenMoxie Controller
+Comment=Control your OpenMoxie robot
+Exec=SimpleMoxieSwitcher
+Icon=SimpleMoxieSwitcher
+Terminal=false
+Categories=Utility;Education;
+Keywords=moxie;robot;ai;education;

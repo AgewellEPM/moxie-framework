@@ -1,0 +1,496 @@
+<Window x:Class="SimpleMoxieSwitcher.Views.ControlsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Moxie Controls"
+        Height="750" Width="950"
+        WindowStartupLocation="CenterOwner"
+        Background="#1A1A2E">
+
+    <Window.Resources>
+        <!-- Control Button Style -->
+        <Style x:Key="ControlButton" TargetType="Button">
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="80"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#4400FFFF" Offset="0"/>
+                        <GradientStop Color="#3300AAFF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                              CornerRadius="15"
+                              Background="{TemplateBinding Background}"
+                              RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform x:Name="scale" ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="scale"
+                                                           Storyboard.TargetProperty="ScaleX"
+                                                           To="0.95" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="scale"
+                                                           Storyboard.TargetProperty="ScaleY"
+                                                           To="0.95" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="scale"
+                                                           Storyboard.TargetProperty="ScaleX"
+                                                           To="1" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="scale"
+                                                           Storyboard.TargetProperty="ScaleY"
+                                                           To="1" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Joystick Style -->
+        <Style x:Key="JoystickThumb" TargetType="Thumb">
+            <Setter Property="Width" Value="60"/>
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Ellipse Fill="#00FFFF">
+                            <Ellipse.Effect>
+                                <DropShadowEffect Color="#00FFFF" BlurRadius="15" Opacity="0.8" ShadowDepth="0"/>
+                            </Ellipse.Effect>
+                        </Ellipse>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#0F0F1E" Padding="20">
+            <Grid>
+                <TextBlock Text="🎮 Moxie Controls"
+                         Foreground="White"
+                         FontSize="24"
+                         FontWeight="Bold"
+                         HorizontalAlignment="Center"/>
+
+                <Button Content="✕"
+                      Click="CloseButton_Click"
+                      HorizontalAlignment="Right"
+                      Width="30" Height="30"
+                      Background="Transparent"
+                      Foreground="White"
+                      BorderThickness="0"/>
+            </Grid>
+        </Border>
+
+        <!-- Control Panels -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid Margin="30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Panel - Movement & Actions -->
+                <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                    <!-- Movement Controls -->
+                    <Border Background="#2A2A3E"
+                          CornerRadius="15"
+                          Padding="20"
+                          Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                     Text="Movement"
+                                     Foreground="#00FFFF"
+                                     FontSize="18"
+                                     FontWeight="SemiBold"
+                                     Margin="0,0,0,15"/>
+
+                            <!-- Joystick Area -->
+                            <Border Grid.Row="1"
+                                  Width="200" Height="200"
+                                  CornerRadius="100"
+                                  Background="#1A1A2E"
+                                  HorizontalAlignment="Center">
+                                <Canvas x:Name="JoystickCanvas"
+                                      MouseMove="Joystick_MouseMove"
+                                      MouseLeftButtonDown="Joystick_MouseDown"
+                                      MouseLeftButtonUp="Joystick_MouseUp">
+                                    <Ellipse Width="200" Height="200"
+                                           Stroke="#00FFFF"
+                                           StrokeThickness="2"
+                                           StrokeDashArray="5,5"
+                                           Opacity="0.3"/>
+
+                                    <Thumb x:Name="JoystickThumb"
+                                         Style="{StaticResource JoystickThumb}"
+                                         Canvas.Left="70"
+                                         Canvas.Top="70"/>
+                                </Canvas>
+                            </Border>
+
+                            <!-- Speed Control -->
+                            <Grid Grid.Row="2" Margin="0,20,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                         Text="Speed:"
+                                         Foreground="White"
+                                         VerticalAlignment="Center"
+                                         Margin="0,0,10,0"/>
+
+                                <Slider Grid.Column="1"
+                                      Value="{Binding MovementSpeed}"
+                                      Minimum="0" Maximum="100"
+                                      TickFrequency="25"
+                                      IsSnapToTickEnabled="True"/>
+
+                                <TextBlock Grid.Column="2"
+                                         Text="{Binding MovementSpeed, StringFormat={}{0}%}"
+                                         Foreground="White"
+                                         Width="40"
+                                         Margin="10,0,0,0"
+                                         VerticalAlignment="Center"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- Head Controls -->
+                    <Border Background="#2A2A3E"
+                          CornerRadius="15"
+                          Padding="20"
+                          Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                     Text="Head Movement"
+                                     Foreground="#00FFFF"
+                                     FontSize="18"
+                                     FontWeight="SemiBold"
+                                     Margin="0,0,0,15"/>
+
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Up -->
+                                <Button Grid.Row="0" Grid.Column="1"
+                                      Command="{Binding HeadUpCommand}"
+                                      Style="{StaticResource ControlButton}">
+                                    <Path Data="M 20 30 L 40 10 L 60 30"
+                                        Stroke="White"
+                                        StrokeThickness="3"/>
+                                </Button>
+
+                                <!-- Left -->
+                                <Button Grid.Row="1" Grid.Column="0"
+                                      Command="{Binding HeadLeftCommand}"
+                                      Style="{StaticResource ControlButton}">
+                                    <Path Data="M 30 20 L 10 40 L 30 60"
+                                        Stroke="White"
+                                        StrokeThickness="3"/>
+                                </Button>
+
+                                <!-- Center -->
+                                <Button Grid.Row="1" Grid.Column="1"
+                                      Command="{Binding HeadCenterCommand}"
+                                      Style="{StaticResource ControlButton}">
+                                    <Ellipse Width="30" Height="30"
+                                           Fill="White"/>
+                                </Button>
+
+                                <!-- Right -->
+                                <Button Grid.Row="1" Grid.Column="2"
+                                      Command="{Binding HeadRightCommand}"
+                                      Style="{StaticResource ControlButton}">
+                                    <Path Data="M 50 20 L 70 40 L 50 60"
+                                        Stroke="White"
+                                        StrokeThickness="3"/>
+                                </Button>
+
+                                <!-- Down -->
+                                <Button Grid.Row="2" Grid.Column="1"
+                                      Command="{Binding HeadDownCommand}"
+                                      Style="{StaticResource ControlButton}">
+                                    <Path Data="M 20 50 L 40 70 L 60 50"
+                                        Stroke="White"
+                                        StrokeThickness="3"/>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- Right Panel - Expressions & Actions -->
+                <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                    <!-- Facial Expressions -->
+                    <Border Background="#2A2A3E"
+                          CornerRadius="15"
+                          Padding="20"
+                          Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                     Text="Facial Expressions"
+                                     Foreground="#00FFFF"
+                                     FontSize="18"
+                                     FontWeight="SemiBold"
+                                     Margin="0,0,0,15"/>
+
+                            <ItemsControl Grid.Row="1"
+                                        ItemsSource="{Binding FacialExpressions}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Command="{Binding Command}"
+                                              Width="70" Height="70"
+                                              Margin="5"
+                                              Background="#3344FF88"
+                                              BorderThickness="0">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border CornerRadius="10"
+                                                          Background="{TemplateBinding Background}">
+                                                        <StackPanel>
+                                                            <TextBlock Text="{Binding Emoji}"
+                                                                     FontSize="28"
+                                                                     HorizontalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding Name}"
+                                                                     Foreground="White"
+                                                                     FontSize="10"
+                                                                     HorizontalAlignment="Center"
+                                                                     Margin="0,2,0,0"/>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+
+                    <!-- Actions -->
+                    <Border Background="#2A2A3E"
+                          CornerRadius="15"
+                          Padding="20"
+                          Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                     Text="Actions"
+                                     Foreground="#00FFFF"
+                                     FontSize="18"
+                                     FontWeight="SemiBold"
+                                     Margin="0,0,0,15"/>
+
+                            <StackPanel Grid.Row="1">
+                                <Button Content="Wave"
+                                      Command="{Binding WaveCommand}"
+                                      Height="40"
+                                      Margin="0,0,0,10"
+                                      Background="#4400FF88"
+                                      Foreground="White"
+                                      BorderThickness="0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border CornerRadius="8"
+                                                  Background="{TemplateBinding Background}">
+                                                <TextBlock Text="{TemplateBinding Content}"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="{TemplateBinding Foreground}"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+
+                                <Button Content="Dance"
+                                      Command="{Binding DanceCommand}"
+                                      Height="40"
+                                      Margin="0,0,0,10"
+                                      Background="#44FF00FF"
+                                      Foreground="White"
+                                      BorderThickness="0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border CornerRadius="8"
+                                                  Background="{TemplateBinding Background}">
+                                                <TextBlock Text="{TemplateBinding Content}"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="{TemplateBinding Foreground}"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+
+                                <Button Content="High Five"
+                                      Command="{Binding HighFiveCommand}"
+                                      Height="40"
+                                      Margin="0,0,0,10"
+                                      Background="#44FFAA00"
+                                      Foreground="White"
+                                      BorderThickness="0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border CornerRadius="8"
+                                                  Background="{TemplateBinding Background}">
+                                                <TextBlock Text="{TemplateBinding Content}"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="{TemplateBinding Foreground}"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+
+                                <Button Content="Sleep Mode"
+                                      Command="{Binding SleepCommand}"
+                                      Height="40"
+                                      Background="#440088FF"
+                                      Foreground="White"
+                                      BorderThickness="0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border CornerRadius="8"
+                                                  Background="{TemplateBinding Background}">
+                                                <TextBlock Text="{TemplateBinding Content}"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="{TemplateBinding Foreground}"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Voice Control -->
+                    <Border Background="#2A2A3E"
+                          CornerRadius="15"
+                          Padding="20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                     Text="Voice"
+                                     Foreground="#00FFFF"
+                                     FontSize="18"
+                                     FontWeight="SemiBold"
+                                     Margin="0,0,0,15"/>
+
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBox Text="{Binding VoiceText}"
+                                       Background="#1A1A2E"
+                                       Foreground="White"
+                                       BorderBrush="#00FFFF"
+                                       BorderThickness="1"
+                                       Padding="10"
+                                       Height="60"
+                                       TextWrapping="Wrap"
+                                       AcceptsReturn="True"/>
+
+                                <Button Grid.Row="1"
+                                      Content="Speak"
+                                      Command="{Binding SpeakCommand}"
+                                      Height="40"
+                                      Margin="0,10,0,0"
+                                      Background="#00FFFF"
+                                      Foreground="#1A1A2E"
+                                      FontWeight="Bold"
+                                      BorderThickness="0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border CornerRadius="8"
+                                                  Background="{TemplateBinding Background}">
+                                                <TextBlock Text="{TemplateBinding Content}"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="{TemplateBinding Foreground}"
+                                                         FontWeight="{TemplateBinding FontWeight}"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Window>

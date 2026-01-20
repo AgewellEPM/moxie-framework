@@ -1,0 +1,28 @@
+# Build outputs
+.build/
+.swiftpm/
+*.app
+*.dmg
+DerivedData/
+
+# Xcode
+xcuserdata/
+*.xcworkspace
+!default.xcworkspace
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+
+# macOS
+.DS_Store
+*.swp
+*.swo
+
+# Secrets
+.env
+credentials.json
+*.pem
+*.p12
+
+# User-specific
+.netrc

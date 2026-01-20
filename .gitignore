@@ -1,0 +1,145 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Xcode
+build/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+Package.pins
+Package.resolved
+*.xcodeproj
+.netrc
+
+# Windows
+SimpleMoxieSwitcher-Windows/bin/
+SimpleMoxieSwitcher-Windows/obj/
+SimpleMoxieSwitcher-Windows/.vs/
+SimpleMoxieSwitcher-Windows/*.user
+SimpleMoxieSwitcher-Windows/*.suo
+
+# Linux
+SimpleMoxieSwitcher-Linux/build*/
+SimpleMoxieSwitcher-Linux/*.pro.user
+SimpleMoxieSwitcher-Linux/CMakeFiles/
+SimpleMoxieSwitcher-Linux/CMakeCache.txt
+
+# Sensitive Data - IMPORTANT
+*.env
+.env.*
+config.json
+secrets.json
+*apikey*
+*api_key*
+*API_KEY*
+credentials.json
+auth.json
+
+# AI Model Configuration - REMOVED FOR PUBLIC RELEASE
+AIProviderManager.swift.bak
+AIService.swift.bak
+ai_config.json
+model_config.json
+provider_config.json
+
+# Personality System - REMOVED FOR PUBLIC RELEASE
+PersonalityService.swift.bak
+PersonalityShiftService.swift.bak
+personality_templates/
+custom_personalities/
+
+# Games - REMOVED FOR PUBLIC RELEASE
+Games/
+AIGamesAndLanguages/
+game_assets/
+game_data/
+
+# Test files
+test_*.swift
+test_*.py
+*.test
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Build artifacts
+*.o
+*.so
+*.dylib
+*.dll
+*.exe
+*.app
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Documentation builds
+docs/_build/
+docs/.doctrees/
+
+# Private/Internal directories
+Private/
+Internal/
+SimpleMoxieSwitcher-Public/
+SimpleMoxieSwitcher-Windows-Public/
+
+# Database
+*.sqlite
+*.db
+*.realm
+
+# Cache
+.cache/
+cache/
+__pycache__/
+*.pyc
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Node (if any JS components)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

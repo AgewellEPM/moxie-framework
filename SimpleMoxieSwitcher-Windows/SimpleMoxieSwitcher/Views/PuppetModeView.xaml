@@ -1,0 +1,236 @@
+<UserControl x:Class="SimpleMoxieSwitcher.Views.PuppetModeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="1200">
+
+    <Grid Background="#0A0A0A">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel - Voice & Speech -->
+            <Border Grid.Column="0" Background="#1A1A1A" BorderBrush="#333333" BorderThickness="0,0,1,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20">
+                        <TextBlock Text="🎭 Puppet Mode" FontSize="24" FontWeight="Bold"
+                                 Foreground="White" Margin="0,0,0,20"/>
+
+                        <!-- Voice Control -->
+                        <Border Background="#22FFFFFF" CornerRadius="15" Padding="20" Margin="0,0,0,20">
+                            <StackPanel>
+                                <TextBlock Text="Voice Control" FontSize="18" FontWeight="Bold"
+                                         Foreground="White" Margin="0,0,0,15"/>
+
+                                <TextBlock Text="Text to Speak:" Foreground="#AAAAAA" Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding TextToSpeak}" TextWrapping="Wrap" AcceptsReturn="True"
+                                       MinHeight="80" MaxHeight="150" VerticalScrollBarVisibility="Auto"
+                                       Background="#33FFFFFF" Foreground="White" Padding="10"/>
+
+                                <Button Content="🔊 Speak Now" Command="{Binding SpeakCommand}"
+                                      Margin="0,10,0,0" Padding="15,8" HorizontalAlignment="Stretch"/>
+
+                                <!-- Voice Settings -->
+                                <TextBlock Text="Voice Settings" Foreground="White" Margin="0,20,0,10"/>
+
+                                <TextBlock Text="Pitch:" Foreground="#AAAAAA" Margin="0,0,0,5"/>
+                                <Slider Value="{Binding VoicePitch}" Minimum="0.5" Maximum="2.0" TickFrequency="0.25"/>
+
+                                <TextBlock Text="Speed:" Foreground="#AAAAAA" Margin="0,10,0,5"/>
+                                <Slider Value="{Binding VoiceSpeed}" Minimum="0.5" Maximum="2.0" TickFrequency="0.25"/>
+
+                                <TextBlock Text="Emotion:" Foreground="#AAAAAA" Margin="0,10,0,5"/>
+                                <ComboBox SelectedItem="{Binding VoiceEmotion}">
+                                    <ComboBoxItem>Neutral</ComboBoxItem>
+                                    <ComboBoxItem>Happy</ComboBoxItem>
+                                    <ComboBoxItem>Sad</ComboBoxItem>
+                                    <ComboBoxItem>Excited</ComboBoxItem>
+                                    <ComboBoxItem>Angry</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Quick Phrases -->
+                        <Border Background="#22FFFFFF" CornerRadius="15" Padding="20">
+                            <StackPanel>
+                                <TextBlock Text="Quick Phrases" FontSize="18" FontWeight="Bold"
+                                         Foreground="White" Margin="0,0,0,15"/>
+
+                                <ItemsControl ItemsSource="{Binding QuickPhrases}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Content="{Binding}" Command="{Binding DataContext.SpeakPhraseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                  CommandParameter="{Binding}" HorizontalAlignment="Stretch"
+                                                  Padding="10,5" Margin="0,2" Background="#33FFFFFF"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <Button Content="+ Add Phrase" Command="{Binding AddPhraseCommand}"
+                                      Margin="0,10,0,0" HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Center - Live Preview -->
+            <Grid Grid.Column="1" Background="#050505">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Status Bar -->
+                <Border Grid.Row="0" Background="#1A000000" Padding="20">
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <Ellipse Width="12" Height="12" Fill="{Binding StatusColor}" Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding StatusText}" Foreground="White"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock Text="Mode: " Foreground="#666666"/>
+                            <TextBlock Text="{Binding CurrentMode}" Foreground="#00CED1" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Moxie Preview -->
+                <Viewbox Grid.Row="1" Margin="40">
+                    <Canvas Width="400" Height="400">
+                        <!-- Body -->
+                        <Ellipse Width="200" Height="250" Fill="#00CED1" Canvas.Left="100" Canvas.Top="100"/>
+
+                        <!-- Head -->
+                        <Ellipse Width="150" Height="150" Fill="#00FFFF" Canvas.Left="125" Canvas.Top="50"/>
+
+                        <!-- Eyes -->
+                        <Ellipse Width="{Binding LeftEyeWidth}" Height="{Binding LeftEyeHeight}"
+                               Fill="Black" Canvas.Left="150" Canvas.Top="90"/>
+                        <Ellipse Width="{Binding RightEyeWidth}" Height="{Binding RightEyeHeight}"
+                               Fill="Black" Canvas.Left="200" Canvas.Top="90"/>
+
+                        <!-- Mouth -->
+                        <Path Data="{Binding MouthPath}" Stroke="Black" StrokeThickness="3"
+                            Fill="None" Canvas.Left="175" Canvas.Top="130"/>
+
+                        <!-- Arms -->
+                        <Line X1="100" Y1="150" X2="{Binding LeftArmX}" Y2="{Binding LeftArmY}"
+                            Stroke="#00CED1" StrokeThickness="20" StrokeLineCap="Round"/>
+                        <Line X1="300" Y1="150" X2="{Binding RightArmX}" Y2="{Binding RightArmY}"
+                            Stroke="#00CED1" StrokeThickness="20" StrokeLineCap="Round"/>
+                    </Canvas>
+                </Viewbox>
+
+                <!-- Movement Controls -->
+                <Border Grid.Row="2" Background="#1A000000" Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="Body Movement" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Content="👋 Wave" Command="{Binding WaveCommand}" Padding="15,8" Margin="5,0"/>
+                            <Button Content="🙆 Nod" Command="{Binding NodCommand}" Padding="15,8" Margin="5,0"/>
+                            <Button Content="🤷 Shrug" Command="{Binding ShrugCommand}" Padding="15,8" Margin="5,0"/>
+                            <Button Content="💃 Dance" Command="{Binding DanceCommand}" Padding="15,8" Margin="5,0"/>
+                            <Button Content="🧍 Reset" Command="{Binding ResetPoseCommand}" Padding="15,8" Margin="5,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Right Panel - Emotions & Actions -->
+            <Border Grid.Column="2" Background="#1A1A1A" BorderBrush="#333333" BorderThickness="1,0,0,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20">
+                        <!-- Facial Expressions -->
+                        <TextBlock Text="Facial Expressions" FontSize="18" FontWeight="Bold"
+                                 Foreground="White" Margin="0,0,0,15"/>
+
+                        <ItemsControl ItemsSource="{Binding FacialExpressions}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding DataContext.SetExpressionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          CommandParameter="{Binding}" Width="80" Height="80" Margin="5">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{Binding BackgroundColor}" CornerRadius="10">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding Emoji}" FontSize="32"
+                                                                 HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                                                        <TextBlock Text="{Binding Name}" FontSize="11"
+                                                                 Foreground="White" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Separator Background="#333333" Margin="0,20"/>
+
+                        <!-- Animation Sequences -->
+                        <TextBlock Text="Animations" FontSize="18" FontWeight="Bold"
+                                 Foreground="White" Margin="0,0,0,15"/>
+
+                        <ItemsControl ItemsSource="{Binding AnimationSequences}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding DataContext.PlayAnimationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          CommandParameter="{Binding}" HorizontalAlignment="Stretch"
+                                          Background="#22FFFFFF" Padding="10" Margin="0,3">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Icon}" Margin="0,0,10,0"/>
+                                            <TextBlock Text="{Binding Name}" Foreground="White"/>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Separator Background="#333333" Margin="0,20"/>
+
+                        <!-- Recording Controls -->
+                        <Border Background="#22FFFFFF" CornerRadius="15" Padding="15">
+                            <StackPanel>
+                                <TextBlock Text="Recording" FontSize="16" FontWeight="Bold"
+                                         Foreground="White" Margin="0,0,0,10"/>
+
+                                <ToggleButton IsChecked="{Binding IsRecording}" HorizontalAlignment="Center">
+                                    <ToggleButton.Template>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Grid>
+                                                <Ellipse Width="80" Height="80" Fill="{Binding RecordButtonColor}"/>
+                                                <TextBlock Text="{Binding RecordButtonText}" FontSize="32"
+                                                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </ToggleButton.Template>
+                                </ToggleButton>
+
+                                <TextBlock Text="{Binding RecordingTime}" HorizontalAlignment="Center"
+                                         Foreground="#FF0000" FontWeight="Bold" Margin="0,10,0,0"
+                                         Visibility="{Binding IsRecording, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                                <Button Content="Save Recording" Command="{Binding SaveRecordingCommand}"
+                                      Margin="0,10,0,0" HorizontalAlignment="Stretch"
+                                      IsEnabled="{Binding HasRecording}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

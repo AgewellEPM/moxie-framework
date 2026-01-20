@@ -1,0 +1,235 @@
+{
+  "name": "Typical Tuesday - 7yo after school",
+  "description": "Morning wakeup → school → homework struggle → play → bedtime routine",
+  "child_profile": {
+    "age": 7,
+    "baseline_energy": "medium",
+    "typical_mood": "happy",
+    "stress_triggers": ["homework", "transitions", "being tired"],
+    "recovery_methods": ["play", "stories", "comfort"]
+  },
+  "timeline": [
+    {
+      "phase": "morning_wakeup",
+      "time_range": "07:00-07:15",
+      "interactions": [
+        {
+          "text": "Good morning Moxie",
+          "timestamp": "07:05",
+          "energy": "low",
+          "emotionalTone": "calm",
+          "expected_intent": "socializing"
+        },
+        {
+          "text": "I have school today",
+          "timestamp": "07:08",
+          "energy": "medium",
+          "emotionalTone": "neutral",
+          "expected_intent": "socializing"
+        }
+      ]
+    },
+    {
+      "phase": "after_school_arrival",
+      "time_range": "15:30-15:45",
+      "interactions": [
+        {
+          "text": "I'm home!",
+          "timestamp": "15:32",
+          "energy": "high",
+          "emotionalTone": "excited",
+          "expected_intent": "socializing"
+        },
+        {
+          "text": "We learned about space today!",
+          "timestamp": "15:33",
+          "energy": "high",
+          "emotionalTone": "excited",
+          "expected_intent": "explore"
+        },
+        {
+          "text": "Can you tell me more about planets?",
+          "timestamp": "15:35",
+          "energy": "high",
+          "emotionalTone": "curious",
+          "expected_intent": "learn"
+        }
+      ]
+    },
+    {
+      "phase": "homework_time_struggle",
+      "time_range": "16:00-16:30",
+      "interactions": [
+        {
+          "text": "I have to do math homework",
+          "timestamp": "16:02",
+          "energy": "low",
+          "emotionalTone": "neutral",
+          "expected_intent": "learn"
+        },
+        {
+          "text": "This is so hard!",
+          "timestamp": "16:08",
+          "energy": "medium",
+          "emotionalTone": "frustrated",
+          "expected_intent": "comfort"
+        },
+        {
+          "text": "I don't understand this problem",
+          "timestamp": "16:12",
+          "energy": "low",
+          "emotionalTone": "upset",
+          "expected_intent": "learn",
+          "context": "drift_from_learn_to_comfort_expected"
+        },
+        {
+          "text": "Can you help me?",
+          "timestamp": "16:14",
+          "energy": "low",
+          "emotionalTone": "worried",
+          "expected_intent": "comfort"
+        },
+        {
+          "text": "Okay, I think I get it now",
+          "timestamp": "16:22",
+          "energy": "medium",
+          "emotionalTone": "content",
+          "expected_intent": "learn",
+          "context": "recovery_from_stress"
+        }
+      ]
+    },
+    {
+      "phase": "play_break",
+      "time_range": "16:45-17:15",
+      "interactions": [
+        {
+          "text": "I'm done with homework!",
+          "timestamp": "16:47",
+          "energy": "high",
+          "emotionalTone": "happy",
+          "expected_intent": "socializing"
+        },
+        {
+          "text": "Let's play a game!",
+          "timestamp": "16:48",
+          "energy": "very_high",
+          "emotionalTone": "playful",
+          "expected_intent": "play"
+        },
+        {
+          "text": "This is so fun!",
+          "timestamp": "17:05",
+          "energy": "very_high",
+          "emotionalTone": "excited",
+          "expected_intent": "play"
+        }
+      ]
+    },
+    {
+      "phase": "dinner_transition",
+      "time_range": "17:30-17:35",
+      "interactions": [
+        {
+          "text": "Mom says I have to eat dinner now",
+          "timestamp": "17:32",
+          "energy": "medium",
+          "emotionalTone": "neutral",
+          "expected_intent": "socializing"
+        },
+        {
+          "text": "I'll be back after!",
+          "timestamp": "17:34",
+          "energy": "medium",
+          "emotionalTone": "happy",
+          "expected_intent": "socializing"
+        }
+      ]
+    },
+    {
+      "phase": "evening_wind_down",
+      "time_range": "19:00-19:30",
+      "interactions": [
+        {
+          "text": "I'm back!",
+          "timestamp": "19:02",
+          "energy": "medium",
+          "emotionalTone": "content",
+          "expected_intent": "socializing"
+        },
+        {
+          "text": "Can you tell me a story?",
+          "timestamp": "19:05",
+          "energy": "low",
+          "emotionalTone": "calm",
+          "expected_intent": "storytelling"
+        },
+        {
+          "text": "That was a good story",
+          "timestamp": "19:20",
+          "energy": "low",
+          "emotionalTone": "content",
+          "expected_intent": "socializing"
+        }
+      ]
+    },
+    {
+      "phase": "bedtime_resistance",
+      "time_range": "20:00-20:15",
+      "interactions": [
+        {
+          "text": "I don't want to go to bed yet",
+          "timestamp": "20:02",
+          "energy": "low",
+          "emotionalTone": "defiant",
+          "expected_intent": "play",
+          "context": "tiredness_showing_as_resistance"
+        },
+        {
+          "text": "I'm not even tired",
+          "timestamp": "20:05",
+          "energy": "very_low",
+          "emotionalTone": "frustrated",
+          "expected_intent": "comfort",
+          "context": "obvious_tiredness"
+        },
+        {
+          "text": "Okay fine, goodnight",
+          "timestamp": "20:12",
+          "energy": "very_low",
+          "emotionalTone": "calm",
+          "expected_intent": "socializing",
+          "context": "acceptance_of_bedtime"
+        }
+      ]
+    }
+  ],
+  "assertions": {
+    "global": [
+      "No crashes throughout entire day",
+      "Intent detection completes in <100ms per interaction",
+      "Confidence scores adjust appropriately to context",
+      "System handles 6+ hour gaps without state corruption",
+      "Emotional state changes are tracked correctly"
+    ],
+    "phase_specific": {
+      "homework_time_struggle": [
+        "Detects drift from learning to comfort during frustration",
+        "Confidence in comfort intent increases with emotional keywords",
+        "Recovery to learn mode after successful problem solving"
+      ],
+      "bedtime_resistance": [
+        "Recognizes defiance as masked tiredness",
+        "Does not force playful response when child is obviously tired",
+        "Comfort mode engagement despite contradictory words"
+      ]
+    }
+  },
+  "stress_test_variations": [
+    "Run 50x with ±10 min timing jitter",
+    "Run 25x with energy levels randomized ±1 level",
+    "Run 25x with emotional tones swapped within category",
+    "Run 10x with random silences inserted (5-30 seconds)",
+    "Run 10x with 2-3 interactions removed randomly"
+  ]
+}

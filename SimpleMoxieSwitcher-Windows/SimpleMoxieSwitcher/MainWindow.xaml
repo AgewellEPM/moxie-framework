@@ -1,0 +1,335 @@
+<Window x:Class="SimpleMoxieSwitcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SimpleMoxieSwitcher"
+        mc:Ignorable="d"
+        Title="Moxie Controller"
+        Height="720" Width="1280"
+        MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowStyle="None">
+
+    <Window.Resources>
+        <!-- Glassmorphism Background Brush -->
+        <LinearGradientBrush x:Key="GlassBrush" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#CC1A1A2E" Offset="0"/>
+            <GradientStop Color="#CC16213E" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Neon Glow Colors -->
+        <Color x:Key="CyanGlow">#00FFFF</Color>
+        <Color x:Key="PurpleGlow">#9D4EDD</Color>
+        <Color x:Key="GreenGlow">#00FF88</Color>
+
+        <!-- Button Animations -->
+        <Storyboard x:Key="HoverAnimation">
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                           To="1.1" Duration="0:0:0.2">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                           To="1.1" Duration="0:0:0.2">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </Window.Resources>
+
+    <Border CornerRadius="20"
+            Background="{StaticResource GlassBrush}"
+            BorderThickness="1">
+        <Border.BorderBrush>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#4400FF88" Offset="0"/>
+                <GradientStop Color="#4400FFFF" Offset="0.5"/>
+                <GradientStop Color="#440088FF" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.BorderBrush>
+
+        <Border.Effect>
+            <DropShadowEffect Color="#00FFFF" BlurRadius="20" Opacity="0.3" ShadowDepth="0"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Custom Title Bar -->
+            <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                         Text="🤖"
+                         FontSize="20"
+                         VerticalAlignment="Center"
+                         Margin="15,0,10,0"/>
+
+                <TextBlock Grid.Column="1"
+                         Text="Moxie Controller"
+                         Foreground="White"
+                         FontSize="14"
+                         VerticalAlignment="Center"/>
+
+                <!-- Window Controls -->
+                <StackPanel Grid.Column="2"
+                          Orientation="Horizontal"
+                          Margin="0,0,10,0">
+                    <Button x:Name="MinimizeButton"
+                          Content="─"
+                          Width="30" Height="30"
+                          Background="Transparent"
+                          Foreground="White"
+                          BorderThickness="0"
+                          Click="MinimizeButton_Click"/>
+                    <Button x:Name="MaximizeButton"
+                          Content="□"
+                          Width="30" Height="30"
+                          Background="Transparent"
+                          Foreground="White"
+                          BorderThickness="0"
+                          Click="MaximizeButton_Click"/>
+                    <Button x:Name="CloseButton"
+                          Content="✕"
+                          Width="30" Height="30"
+                          Background="Transparent"
+                          Foreground="White"
+                          BorderThickness="0"
+                          Click="CloseButton_Click"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Header Section -->
+            <Grid Grid.Row="1" Margin="20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Title -->
+                <TextBlock Grid.Row="0"
+                         Text="{Binding LocalizedTitle}"
+                         FontSize="32"
+                         FontWeight="Bold"
+                         Foreground="White"
+                         HorizontalAlignment="Center">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="10" ShadowDepth="2"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+
+                <!-- Status Bar -->
+                <Grid Grid.Row="1" Margin="0,15,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Online Status -->
+                    <Border Grid.Column="1"
+                          CornerRadius="20"
+                          Padding="15,8"
+                          Margin="0,0,10,0"
+                          MouseLeftButtonUp="OnlineStatus_Click">
+                        <Border.Background>
+                            <SolidColorBrush Color="White" Opacity="0.15"/>
+                        </Border.Background>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="10" Height="10" Margin="0,0,8,0">
+                                <Ellipse.Fill>
+                                    <SolidColorBrush Color="{Binding IsOnline, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Green|Red'}"/>
+                                </Ellipse.Fill>
+                                <Ellipse.Effect>
+                                    <DropShadowEffect Color="{Binding IsOnline, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Green|Red'}"
+                                                    BlurRadius="10" ShadowDepth="0"/>
+                                </Ellipse.Effect>
+                            </Ellipse>
+
+                            <TextBlock Foreground="White" Opacity="0.8" FontSize="12">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} - {1}">
+                                        <Binding Path="OnlineStatusText"/>
+                                        <Binding Path="UptimeText"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+
+                            <Path Data="M 0 0 L 4 4 L 8 0"
+                                Stroke="White"
+                                StrokeThickness="1.5"
+                                Opacity="0.6"
+                                Margin="8,0,0,0"
+                                Visibility="{Binding IsOnline, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Language Selector -->
+                    <ComboBox Grid.Column="2"
+                            ItemsSource="{Binding Languages}"
+                            SelectedItem="{Binding SelectedLanguage}"
+                            Width="150">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Flag}" Margin="0,0,8,0"/>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+            </Grid>
+
+            <!-- Main Content Area -->
+            <ScrollViewer Grid.Row="2"
+                        VerticalScrollBarVisibility="Auto"
+                        HorizontalScrollBarVisibility="Disabled"
+                        Margin="20">
+                <ItemsControl ItemsSource="{Binding AllItems}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="5"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Top"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding Command}"
+                                  Width="150" Height="100"
+                                  Margin="10"
+                                  Background="Transparent"
+                                  BorderThickness="0">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border"
+                                              CornerRadius="18"
+                                              RenderTransformOrigin="0.5,0.5">
+                                            <Border.RenderTransform>
+                                                <ScaleTransform x:Name="scale" ScaleX="1" ScaleY="1"/>
+                                            </Border.RenderTransform>
+
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                    <GradientStop Color="#CC00FFFF" Offset="0"/>
+                                                    <GradientStop Color="#9900FFFF" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+
+                                            <Border.Effect>
+                                                <DropShadowEffect x:Name="shadow"
+                                                                Color="#00FFFF"
+                                                                BlurRadius="15"
+                                                                Opacity="0.6"
+                                                                ShadowDepth="8"/>
+                                            </Border.Effect>
+
+                                            <Grid>
+                                                <!-- Glossy Overlay -->
+                                                <Border CornerRadius="18">
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,0.5">
+                                                            <GradientStop Color="#66FFFFFF" Offset="0"/>
+                                                            <GradientStop Color="Transparent" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+
+                                                <!-- Content -->
+                                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                    <TextBlock Text="{Binding Emoji}"
+                                                             FontSize="{Binding EmojiSize}"
+                                                             HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Name}"
+                                                             Foreground="White"
+                                                             FontSize="12"
+                                                             FontWeight="SemiBold"
+                                                             HorizontalAlignment="Center"
+                                                             Margin="0,8,0,0"
+                                                             TextWrapping="Wrap"
+                                                             TextAlignment="Center"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Trigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="scale"
+                                                                           Storyboard.TargetProperty="ScaleX"
+                                                                           To="1.15" Duration="0:0:0.2"/>
+                                                            <DoubleAnimation Storyboard.TargetName="scale"
+                                                                           Storyboard.TargetProperty="ScaleY"
+                                                                           To="1.15" Duration="0:0:0.2"/>
+                                                            <DoubleAnimation Storyboard.TargetName="shadow"
+                                                                           Storyboard.TargetProperty="BlurRadius"
+                                                                           To="25" Duration="0:0:0.2"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.EnterActions>
+                                                <Trigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="scale"
+                                                                           Storyboard.TargetProperty="ScaleX"
+                                                                           To="1" Duration="0:0:0.2"/>
+                                                            <DoubleAnimation Storyboard.TargetName="scale"
+                                                                           Storyboard.TargetProperty="ScaleY"
+                                                                           To="1" Duration="0:0:0.2"/>
+                                                            <DoubleAnimation Storyboard.TargetName="shadow"
+                                                                           Storyboard.TargetProperty="BlurRadius"
+                                                                           To="15" Duration="0:0:0.2"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.ExitActions>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Status Bar -->
+            <Border Grid.Row="3"
+                  Background="#1A000000"
+                  Padding="20,10">
+                <Grid>
+                    <TextBlock Text="{Binding StatusMessage}"
+                             Foreground="{Binding StatusColor}"
+                             HorizontalAlignment="Center"
+                             Visibility="{Binding HasStatusMessage, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                    <ProgressBar IsIndeterminate="True"
+                               Height="2"
+                               Foreground="#00FFFF"
+                               Background="Transparent"
+                               BorderThickness="0"
+                               Visibility="{Binding IsUpdating, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

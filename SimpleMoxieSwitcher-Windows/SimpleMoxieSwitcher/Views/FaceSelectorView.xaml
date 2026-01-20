@@ -1,0 +1,442 @@
+<UserControl x:Class="SimpleMoxieSwitcher.Views.FaceSelectorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="1200">
+
+    <UserControl.Resources>
+        <Storyboard x:Key="PulseAnimation">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                           From="1" To="1.1" Duration="0:0:0.5"
+                           AutoReverse="True" RepeatBehavior="Forever"/>
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                           From="1" To="1.1" Duration="0:0:0.5"
+                           AutoReverse="True" RepeatBehavior="Forever"/>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <Grid Background="#1A1A1A">
+        <!-- Background Gradient -->
+        <Grid.Background>
+            <RadialGradientBrush Center="0.5,0.5" RadiusX="0.8" RadiusY="0.8">
+                <GradientStop Color="#2A1A4A" Offset="0"/>
+                <GradientStop Color="#1A1A1A" Offset="1"/>
+            </RadialGradientBrush>
+        </Grid.Background>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="#33000000"
+                    Padding="30,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Face & Emotion Selector"
+                                 FontSize="32"
+                                 FontWeight="Bold"
+                                 Foreground="White"/>
+                        <TextBlock Text="Choose Moxie's expression and emotional state"
+                                 FontSize="14"
+                                 Foreground="#AAAAAA"
+                                 Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                              Orientation="Horizontal">
+                        <Button Content="Random"
+                              Command="{Binding RandomizeCommand}"
+                              Padding="15,8"
+                              Margin="5,0"/>
+                        <Button Content="Reset"
+                              Command="{Binding ResetCommand}"
+                              Padding="15,8"
+                              Margin="5,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Main Content -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="400"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Face Grid -->
+                <ScrollViewer Grid.Column="0"
+                            VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="30">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Category Filters -->
+                        <WrapPanel Grid.Row="0"
+                                 Margin="0,0,0,20">
+                            <RadioButton Content="All"
+                                       IsChecked="{Binding ShowAll}"
+                                       GroupName="Category"
+                                       Margin="0,0,15,0"
+                                       Foreground="White"/>
+                            <RadioButton Content="Happy"
+                                       IsChecked="{Binding ShowHappy}"
+                                       GroupName="Category"
+                                       Margin="0,0,15,0"
+                                       Foreground="White"/>
+                            <RadioButton Content="Sad"
+                                       IsChecked="{Binding ShowSad}"
+                                       GroupName="Category"
+                                       Margin="0,0,15,0"
+                                       Foreground="White"/>
+                            <RadioButton Content="Excited"
+                                       IsChecked="{Binding ShowExcited}"
+                                       GroupName="Category"
+                                       Margin="0,0,15,0"
+                                       Foreground="White"/>
+                            <RadioButton Content="Calm"
+                                       IsChecked="{Binding ShowCalm}"
+                                       GroupName="Category"
+                                       Margin="0,0,15,0"
+                                       Foreground="White"/>
+                            <RadioButton Content="Thinking"
+                                       IsChecked="{Binding ShowThinking}"
+                                       GroupName="Category"
+                                       Margin="0,0,15,0"
+                                       Foreground="White"/>
+                            <RadioButton Content="Surprised"
+                                       IsChecked="{Binding ShowSurprised}"
+                                       GroupName="Category"
+                                       Foreground="White"/>
+                        </WrapPanel>
+
+                        <!-- Face Options Grid -->
+                        <ItemsControl Grid.Row="1"
+                                    ItemsSource="{Binding FilteredFaces}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding DataContext.SelectFaceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          CommandParameter="{Binding}"
+                                          Margin="10">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="#22FFFFFF"
+                                                      BorderBrush="{Binding IsSelected, Converter={StaticResource BoolToBorderBrushConverter}}"
+                                                      BorderThickness="3"
+                                                      CornerRadius="15"
+                                                      Width="150"
+                                                      Height="150"
+                                                      Padding="10">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+
+                                                        <!-- Face Display -->
+                                                        <Viewbox Grid.Row="0"
+                                                               Width="80"
+                                                               Height="80">
+                                                            <Canvas Width="100" Height="100">
+                                                                <!-- Face Circle -->
+                                                                <Ellipse Width="100"
+                                                                       Height="100"
+                                                                       Fill="{Binding FaceColor}"/>
+
+                                                                <!-- Eyes -->
+                                                                <Path Data="{Binding EyesPath}"
+                                                                    Fill="Black"
+                                                                    Stroke="Black"
+                                                                    StrokeThickness="2"/>
+
+                                                                <!-- Mouth -->
+                                                                <Path Data="{Binding MouthPath}"
+                                                                    Fill="None"
+                                                                    Stroke="Black"
+                                                                    StrokeThickness="3"/>
+                                                            </Canvas>
+                                                        </Viewbox>
+
+                                                        <!-- Face Name -->
+                                                        <TextBlock Grid.Row="1"
+                                                                 Text="{Binding Name}"
+                                                                 HorizontalAlignment="Center"
+                                                                 Foreground="White"
+                                                                 FontSize="12"
+                                                                 Margin="0,5,0,0"/>
+                                                    </Grid>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </ScrollViewer>
+
+                <!-- Right Panel - Preview and Controls -->
+                <Border Grid.Column="1"
+                      Background="#22000000"
+                      BorderBrush="#333333"
+                      BorderThickness="1,0,0,0">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="30">
+                            <!-- Large Preview -->
+                            <Border Background="#33000000"
+                                  CornerRadius="20"
+                                  Padding="30"
+                                  Margin="0,0,0,20">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="250"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0"
+                                             Text="Preview"
+                                             FontSize="20"
+                                             FontWeight="Bold"
+                                             Foreground="White"
+                                             HorizontalAlignment="Center"
+                                             Margin="0,0,0,20"/>
+
+                                    <!-- Animated Face Preview -->
+                                    <Viewbox Grid.Row="1"
+                                           Width="200"
+                                           Height="200">
+                                        <Canvas Width="200" Height="200">
+                                            <Canvas.RenderTransform>
+                                                <ScaleTransform CenterX="100" CenterY="100"/>
+                                            </Canvas.RenderTransform>
+                                            <Canvas.Triggers>
+                                                <EventTrigger RoutedEvent="Loaded">
+                                                    <BeginStoryboard Storyboard="{StaticResource PulseAnimation}"/>
+                                                </EventTrigger>
+                                            </Canvas.Triggers>
+
+                                            <!-- Face -->
+                                            <Ellipse Width="200"
+                                                   Height="200"
+                                                   Fill="{Binding SelectedFaceColor}"/>
+
+                                            <!-- Dynamic Eyes -->
+                                            <Path Data="{Binding SelectedEyesPath}"
+                                                Fill="Black"
+                                                Stroke="Black"
+                                                StrokeThickness="3"/>
+
+                                            <!-- Dynamic Mouth -->
+                                            <Path Data="{Binding SelectedMouthPath}"
+                                                Fill="None"
+                                                Stroke="Black"
+                                                StrokeThickness="5"/>
+
+                                            <!-- Accessories if any -->
+                                            <Path Data="{Binding AccessoryPath}"
+                                                Fill="{Binding AccessoryColor}"
+                                                Visibility="{Binding HasAccessory, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        </Canvas>
+                                    </Viewbox>
+
+                                    <TextBlock Grid.Row="2"
+                                             Text="{Binding SelectedFaceName}"
+                                             FontSize="18"
+                                             Foreground="White"
+                                             HorizontalAlignment="Center"
+                                             Margin="0,20,0,0"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Emotion Intensity -->
+                            <Border Background="#22FFFFFF"
+                                  CornerRadius="15"
+                                  Padding="20"
+                                  Margin="0,0,0,20">
+                                <StackPanel>
+                                    <TextBlock Text="Emotion Intensity"
+                                             FontSize="16"
+                                             FontWeight="Bold"
+                                             Foreground="White"
+                                             Margin="0,0,0,10"/>
+
+                                    <Slider Value="{Binding EmotionIntensity}"
+                                          Minimum="0"
+                                          Maximum="100"
+                                          TickFrequency="25"
+                                          TickPlacement="BottomRight"/>
+
+                                    <Grid Margin="0,5,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0"
+                                                 Text="Subtle"
+                                                 FontSize="11"
+                                                 Foreground="#AAAAAA"
+                                                 HorizontalAlignment="Left"/>
+                                        <TextBlock Grid.Column="1"
+                                                 Text="Moderate"
+                                                 FontSize="11"
+                                                 Foreground="#AAAAAA"
+                                                 HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2"
+                                                 Text="Intense"
+                                                 FontSize="11"
+                                                 Foreground="#AAAAAA"
+                                                 HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Face Modifiers -->
+                            <Border Background="#22FFFFFF"
+                                  CornerRadius="15"
+                                  Padding="20"
+                                  Margin="0,0,0,20">
+                                <StackPanel>
+                                    <TextBlock Text="Face Modifiers"
+                                             FontSize="16"
+                                             FontWeight="Bold"
+                                             Foreground="White"
+                                             Margin="0,0,0,10"/>
+
+                                    <CheckBox Content="Add Blush"
+                                            IsChecked="{Binding HasBlush}"
+                                            Foreground="White"
+                                            Margin="0,0,0,8"/>
+
+                                    <CheckBox Content="Add Tears"
+                                            IsChecked="{Binding HasTears}"
+                                            Foreground="White"
+                                            Margin="0,0,0,8"/>
+
+                                    <CheckBox Content="Add Sparkles"
+                                            IsChecked="{Binding HasSparkles}"
+                                            Foreground="White"
+                                            Margin="0,0,0,8"/>
+
+                                    <CheckBox Content="Add Sweat Drop"
+                                            IsChecked="{Binding HasSweat}"
+                                            Foreground="White"
+                                            Margin="0,0,0,8"/>
+
+                                    <CheckBox Content="Add Hearts"
+                                            IsChecked="{Binding HasHearts}"
+                                            Foreground="White"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Animation Settings -->
+                            <Border Background="#22FFFFFF"
+                                  CornerRadius="15"
+                                  Padding="20">
+                                <StackPanel>
+                                    <TextBlock Text="Animation"
+                                             FontSize="16"
+                                             FontWeight="Bold"
+                                             Foreground="White"
+                                             Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Blink Rate:"
+                                             Foreground="White"
+                                             Margin="0,0,0,5"/>
+                                    <ComboBox SelectedItem="{Binding BlinkRate}"
+                                            Margin="0,0,0,10">
+                                        <ComboBoxItem>Normal</ComboBoxItem>
+                                        <ComboBoxItem>Fast</ComboBoxItem>
+                                        <ComboBoxItem>Slow</ComboBoxItem>
+                                        <ComboBoxItem>No Blinking</ComboBoxItem>
+                                    </ComboBox>
+
+                                    <CheckBox Content="Enable idle animations"
+                                            IsChecked="{Binding EnableIdleAnimations}"
+                                            Foreground="White"
+                                            Margin="0,0,0,8"/>
+
+                                    <CheckBox Content="React to voice"
+                                            IsChecked="{Binding ReactToVoice}"
+                                            Foreground="White"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+            <!-- Bottom Action Bar -->
+            <Border Grid.Row="2"
+                    Background="#22000000"
+                    BorderBrush="#333333"
+                    BorderThickness="0,1,0,0"
+                    Padding="30,15">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0"
+                              Orientation="Horizontal">
+                        <Button Content="Save as Preset"
+                              Command="{Binding SavePresetCommand}"
+                              Padding="15,8"
+                              Margin="0,0,10,0"/>
+
+                        <ComboBox SelectedItem="{Binding SelectedPreset}"
+                                ItemsSource="{Binding SavedPresets}"
+                                Width="150"
+                                Margin="0,0,10,0"/>
+
+                        <Button Content="Load Preset"
+                              Command="{Binding LoadPresetCommand}"
+                              Padding="15,8"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2"
+                              Orientation="Horizontal">
+                        <Button Content="Cancel"
+                              Command="{Binding CancelCommand}"
+                              Padding="20,10"
+                              Margin="0,0,10,0"/>
+
+                        <Button Content="Apply Face"
+                              Command="{Binding ApplyFaceCommand}"
+                              Style="{StaticResource AccentButtonStyle}"
+                              Padding="20,10">
+                            <Button.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#FF69B4" Offset="0"/>
+                                    <GradientStop Color="#FF1493" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Button.Background>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

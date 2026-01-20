@@ -1,0 +1,264 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v1
+        with:
+          swift-version: '5.9'
+
+      - name: Build macOS app
+        run: |
+          swift build -c release
+          ./create_app_bundle.sh
+
+      - name: Create DMG
+        run: |
+          # Note: Signing requires secrets configured
+          # For unsigned builds:
+          brew install create-dmg
+          create-dmg \
+            --volname "SimpleMoxieSwitcher" \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --icon-size 100 \
+            --icon "SimpleMoxieSwitcher.app" 200 190 \
+            --hide-extension "SimpleMoxieSwitcher.app" \
+            --app-drop-link 600 185 \
+            "SimpleMoxieSwitcher-${GITHUB_REF_NAME}.dmg" \
+            "SimpleMoxieSwitcher.app"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-dmg
+          path: SimpleMoxieSwitcher-*.dmg
+
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: SimpleMoxieSwitcher-Windows
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build Windows app
+        run: |
+          dotnet publish SimpleMoxieSwitcher/SimpleMoxieSwitcher.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=false `
+            -p:PublishReadyToRun=true
+
+      - name: Install Inno Setup
+        run: |
+          choco install innosetup -y
+
+      - name: Create installer
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: SimpleMoxieSwitcher-Windows/Output/SimpleMoxieSwitcher-Setup.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: SimpleMoxieSwitcher-Linux
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            build-essential \
+            qt6-base-dev \
+            qt6-declarative-dev \
+            qt6-charts-dev \
+            qt6-5compat-dev \
+            libqt6charts6-dev \
+            qml6-module-qtquick \
+            qml6-module-qtquick-controls \
+            qml6-module-qtquick-layouts \
+            qml6-module-qtcharts \
+            qml6-module-qt5compat-graphicaleffects \
+            libmosquitto-dev \
+            pkg-config \
+            libfuse2
+
+      - name: Build Linux app
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          make -j$(nproc)
+
+      - name: Create AppImage
+        run: |
+          cd build
+          # Download linuxdeploy
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          chmod +x linuxdeploy*.AppImage
+
+          # Create AppDir structure
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/share/applications
+          mkdir -p AppDir/usr/share/icons/hicolor/scalable/apps
+
+          cp SimpleMoxieSwitcher AppDir/usr/bin/
+          cp ../resources/SimpleMoxieSwitcher.desktop AppDir/usr/share/applications/
+          cp ../resources/icons/SimpleMoxieSwitcher.svg AppDir/usr/share/icons/hicolor/scalable/apps/
+
+          # Create AppImage
+          export QT_SELECT=qt6
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir --plugin qt --output appimage
+          mv SimpleMoxieSwitcher*.AppImage SimpleMoxieSwitcher-${{ github.ref_name }}-x86_64.AppImage
+
+      - name: Create DEB package
+        run: |
+          cd build
+          # Create Debian package structure
+          mkdir -p deb-pkg/DEBIAN
+          mkdir -p deb-pkg/usr/bin
+          mkdir -p deb-pkg/usr/share/applications
+          mkdir -p deb-pkg/usr/share/icons/hicolor/scalable/apps
+
+          cp SimpleMoxieSwitcher deb-pkg/usr/bin/
+          cp ../resources/SimpleMoxieSwitcher.desktop deb-pkg/usr/share/applications/
+          cp ../resources/icons/SimpleMoxieSwitcher.svg deb-pkg/usr/share/icons/hicolor/scalable/apps/
+
+          VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          cat > deb-pkg/DEBIAN/control << EOF
+Package: simplemoxieswitcher
+Version: ${VERSION}
+Section: misc
+Priority: optional
+Architecture: amd64
+Depends: libqt6core6, libqt6quick6, libmosquitto1, docker-ce | docker.io
+Maintainer: OpenMoxie <support@openmoxie.org>
+Description: SimpleMoxieSwitcher - OpenMoxie Robot Controller
+ Control your Moxie robot locally without cloud subscriptions.
+ Features AI conversations, games, and language learning.
+EOF
+
+          dpkg-deb --build deb-pkg
+          mv deb-pkg.deb simplemoxieswitcher_${{ github.ref_name }}_amd64.deb
+
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-appimage
+          path: SimpleMoxieSwitcher-Linux/build/SimpleMoxieSwitcher-*.AppImage
+
+      - name: Upload DEB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-deb
+          path: SimpleMoxieSwitcher-Linux/build/simplemoxieswitcher_*.deb
+
+  create-release:
+    needs: [build-mac, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Mac artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mac-dmg
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-installer
+
+      - name: Download Linux AppImage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-appimage
+
+      - name: Download Linux DEB artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-deb
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            SimpleMoxieSwitcher-*.dmg
+            SimpleMoxieSwitcher-Setup.exe
+            SimpleMoxieSwitcher-*.AppImage
+            simplemoxieswitcher_*.deb
+          body: |
+            ## SimpleMoxieSwitcher ${{ github.ref_name }}
+
+            ### Downloads
+            - **macOS**: SimpleMoxieSwitcher-${{ github.ref_name }}.dmg
+            - **Windows**: SimpleMoxieSwitcher-Setup.exe
+            - **Linux (AppImage)**: SimpleMoxieSwitcher-${{ github.ref_name }}-x86_64.AppImage
+            - **Linux (Debian/Ubuntu)**: simplemoxieswitcher_${{ github.ref_name }}_amd64.deb
+            - **iOS**: [TestFlight Beta](https://openmoxie.org/download)
+
+            ### Installation
+
+            **macOS**
+            1. Download the DMG file
+            2. Open and drag to Applications
+            3. Launch SimpleMoxieSwitcher
+
+            **Windows**
+            1. Download the Setup.exe installer
+            2. Run the installer
+            3. Follow the setup wizard
+
+            **Linux (AppImage)**
+            1. Download the AppImage
+            2. Make executable: `chmod +x SimpleMoxieSwitcher-*.AppImage`
+            3. Run: `./SimpleMoxieSwitcher-*.AppImage`
+
+            **Linux (Debian/Ubuntu)**
+            1. Download the .deb file
+            2. Install: `sudo dpkg -i simplemoxieswitcher_*.deb`
+            3. Fix dependencies if needed: `sudo apt-get install -f`
+
+            ### Requirements
+            - Docker Desktop (free) or Docker Engine on Linux
+            - macOS 13.0+ / Windows 10 (19041+) / Ubuntu 22.04+
+            - 8GB RAM, 10GB storage
+            - OpenAI API key
+
+            Full documentation: https://openmoxie.org/docs
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

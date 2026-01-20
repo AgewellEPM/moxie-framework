@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="qml/Main.qml">../qml/Main.qml</file>
+        <file alias="qml/Components/NavButton.qml">../qml/Components/NavButton.qml</file>
+        <file alias="qml/Components/GameModeCard.qml">../qml/Components/GameModeCard.qml</file>
+        <file alias="qml/Components/StatBadge.qml">../qml/Components/StatBadge.qml</file>
+        <file alias="qml/Games/GamesMenuView.qml">../qml/Games/GamesMenuView.qml</file>
+        <file alias="qml/Games/GamePlayerView.qml">../qml/Games/GamePlayerView.qml</file>
+        <file alias="qml/Chat/ChatInterfaceView.qml">../qml/Chat/ChatInterfaceView.qml</file>
+        <file alias="qml/Settings/SettingsView.qml">../qml/Settings/SettingsView.qml</file>
+        <file alias="qml/Analytics/UsageView.qml">../qml/Analytics/UsageView.qml</file>
+        <file alias="qml/Analytics/MemoryView.qml">../qml/Analytics/MemoryView.qml</file>
+        <file alias="qml/LanguageLearning/LanguageLearningWizardView.qml">../qml/LanguageLearning/LanguageLearningWizardView.qml</file>
+        <file alias="qml/LanguageLearning/ConversationPracticeView.qml">../qml/LanguageLearning/ConversationPracticeView.qml</file>
+        <file alias="qml/Controls/ControlsView.qml">../qml/Controls/ControlsView.qml</file>
+        <file alias="qml/Controls/RobotControlView.qml">../qml/Controls/RobotControlView.qml</file>
+        <file alias="qml/Story/StoryTimeView.qml">../qml/Story/StoryTimeView.qml</file>
+    </qresource>
+</RCC>

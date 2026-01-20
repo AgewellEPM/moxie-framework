@@ -1,0 +1,433 @@
+<Window x:Class="SimpleMoxieSwitcher.Views.LanguageLearningWizardView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Language Learning Wizard"
+        Height="700" Width="900"
+        WindowStartupLocation="CenterOwner"
+        Background="#1A1A2E">
+
+    <Window.Resources>
+        <!-- Language Card Style -->
+        <Style x:Key="LanguageCard" TargetType="Border">
+            <Setter Property="Width" Value="180"/>
+            <Setter Property="Height" Value="220"/>
+            <Setter Property="Margin" Value="15"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#3300FFFF" Offset="0"/>
+                        <GradientStop Color="#330088FF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX="1.05" ScaleY="1.05" CenterX="90" CenterY="110"/>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect Color="#00FFFF" BlurRadius="25" Opacity="0.7" ShadowDepth="0"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Progress Step Style -->
+        <Style x:Key="ProgressStep" TargetType="Border">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="Background" Value="#333344"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#0F0F1E" Padding="30">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="🌍" FontSize="32" Margin="0,0,15,0"/>
+                    <TextBlock Text="Language Learning Wizard"
+                             Foreground="White"
+                             FontSize="28"
+                             FontWeight="Bold"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <Button Content="✕"
+                      Click="CloseButton_Click"
+                      HorizontalAlignment="Right"
+                      Width="30" Height="30"
+                      Background="Transparent"
+                      Foreground="White"
+                      BorderThickness="0"/>
+            </Grid>
+        </Border>
+
+        <!-- Progress Indicator -->
+        <StackPanel Grid.Row="1"
+                  Orientation="Horizontal"
+                  HorizontalAlignment="Center"
+                  Margin="0,20">
+            <Border Style="{StaticResource ProgressStep}"
+                  Background="{Binding Step1Complete,
+                             Converter={StaticResource BoolToBrushConverter},
+                             ConverterParameter='#00FF88|#333344'}">
+                <TextBlock Text="1" Foreground="White"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         FontWeight="Bold"/>
+            </Border>
+
+            <Rectangle Width="50" Height="2" Fill="#333344" VerticalAlignment="Center"/>
+
+            <Border Style="{StaticResource ProgressStep}"
+                  Background="{Binding Step2Complete,
+                             Converter={StaticResource BoolToBrushConverter},
+                             ConverterParameter='#00FF88|#333344'}">
+                <TextBlock Text="2" Foreground="White"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         FontWeight="Bold"/>
+            </Border>
+
+            <Rectangle Width="50" Height="2" Fill="#333344" VerticalAlignment="Center"/>
+
+            <Border Style="{StaticResource ProgressStep}"
+                  Background="{Binding Step3Complete,
+                             Converter={StaticResource BoolToBrushConverter},
+                             ConverterParameter='#00FF88|#333344'}">
+                <TextBlock Text="3" Foreground="White"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         FontWeight="Bold"/>
+            </Border>
+
+            <Rectangle Width="50" Height="2" Fill="#333344" VerticalAlignment="Center"/>
+
+            <Border Style="{StaticResource ProgressStep}"
+                  Background="{Binding Step4Complete,
+                             Converter={StaticResource BoolToBrushConverter},
+                             ConverterParameter='#00FF88|#333344'}">
+                <TextBlock Text="4" Foreground="White"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         FontWeight="Bold"/>
+            </Border>
+        </StackPanel>
+
+        <!-- Content Area -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <Grid Margin="40">
+                <!-- Step 1: Language Selection -->
+                <Grid Visibility="{Binding ShowLanguageSelection,
+                                 Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                             Text="Choose a Language to Learn"
+                             Foreground="White"
+                             FontSize="24"
+                             FontWeight="SemiBold"
+                             HorizontalAlignment="Center"
+                             Margin="0,0,0,30"/>
+
+                    <ItemsControl Grid.Row="1"
+                                ItemsSource="{Binding AvailableLanguages}"
+                                HorizontalAlignment="Center">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding DataContext.SelectLanguageCommand,
+                                              RelativeSource={RelativeSource AncestorType=Window}}"
+                                      CommandParameter="{Binding}"
+                                      Background="Transparent"
+                                      BorderThickness="0">
+                                    <Border Style="{StaticResource LanguageCard}">
+                                        <Grid>
+                                            <Border CornerRadius="20">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,0.4">
+                                                        <GradientStop Color="#22FFFFFF" Offset="0"/>
+                                                        <GradientStop Color="Transparent" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                            </Border>
+
+                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding Flag}"
+                                                         FontSize="60"
+                                                         HorizontalAlignment="Center"
+                                                         Margin="0,0,0,15"/>
+                                                <TextBlock Text="{Binding Name}"
+                                                         Foreground="White"
+                                                         FontSize="18"
+                                                         FontWeight="SemiBold"
+                                                         HorizontalAlignment="Center"/>
+                                                <TextBlock Text="{Binding NativeName}"
+                                                         Foreground="#AAFFFFFF"
+                                                         FontSize="14"
+                                                         HorizontalAlignment="Center"
+                                                         Margin="0,5,0,0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+
+                <!-- Step 2: Proficiency Level -->
+                <Grid Visibility="{Binding ShowProficiencyLevel,
+                                 Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding SelectedLanguageName, StringFormat='Learning {0}'}"
+                                 Foreground="#00FFFF"
+                                 FontSize="20"
+                                 HorizontalAlignment="Center"
+                                 Margin="0,0,0,10"/>
+                        <TextBlock Text="What's your current level?"
+                                 Foreground="White"
+                                 FontSize="24"
+                                 FontWeight="SemiBold"
+                                 HorizontalAlignment="Center"
+                                 Margin="0,0,0,30"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+                        <RadioButton GroupName="Level" Content="Complete Beginner"
+                                   IsChecked="{Binding IsCompleteBeginnerSelected}"
+                                   Foreground="White" FontSize="16" Margin="0,10"/>
+                        <RadioButton GroupName="Level" Content="Know a Few Words"
+                                   IsChecked="{Binding IsBasicSelected}"
+                                   Foreground="White" FontSize="16" Margin="0,10"/>
+                        <RadioButton GroupName="Level" Content="Can Have Simple Conversations"
+                                   IsChecked="{Binding IsIntermediateSelected}"
+                                   Foreground="White" FontSize="16" Margin="0,10"/>
+                        <RadioButton GroupName="Level" Content="Pretty Good, Want to Improve"
+                                   IsChecked="{Binding IsAdvancedSelected}"
+                                   Foreground="White" FontSize="16" Margin="0,10"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Step 3: Learning Goals -->
+                <Grid Visibility="{Binding ShowLearningGoals,
+                                 Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                             Text="What would you like to focus on?"
+                             Foreground="White"
+                             FontSize="24"
+                             FontWeight="SemiBold"
+                             HorizontalAlignment="Center"
+                             Margin="0,0,0,30"/>
+
+                    <ItemsControl Grid.Row="1"
+                                ItemsSource="{Binding LearningGoals}"
+                                HorizontalAlignment="Center">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" MaxWidth="600"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsSelected}"
+                                        Margin="20,10">
+                                    <CheckBox.Template>
+                                        <ControlTemplate TargetType="CheckBox">
+                                            <Border x:Name="border"
+                                                  Background="#2A2A3E"
+                                                  CornerRadius="10"
+                                                  Padding="20,15"
+                                                  MinWidth="250">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Grid.Column="0"
+                                                             Text="{Binding Icon}"
+                                                             FontSize="24"
+                                                             Margin="0,0,15,0"/>
+
+                                                    <StackPanel Grid.Column="1">
+                                                        <TextBlock Text="{Binding Name}"
+                                                                 Foreground="White"
+                                                                 FontSize="16"
+                                                                 FontWeight="SemiBold"/>
+                                                        <TextBlock Text="{Binding Description}"
+                                                                 Foreground="#AAFFFFFF"
+                                                                 FontSize="12"
+                                                                 TextWrapping="Wrap"
+                                                                 Margin="0,3,0,0"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter TargetName="border" Property="Background">
+                                                        <Setter.Value>
+                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                <GradientStop Color="#4400FFFF" Offset="0"/>
+                                                                <GradientStop Color="#440088FF" Offset="1"/>
+                                                            </LinearGradientBrush>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Setter TargetName="border" Property="BorderBrush" Value="#00FFFF"/>
+                                                    <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </CheckBox.Template>
+                                </CheckBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+
+                <!-- Step 4: Schedule -->
+                <Grid Visibility="{Binding ShowSchedule,
+                                 Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                             Text="How often would you like to practice?"
+                             Foreground="White"
+                             FontSize="24"
+                             FontWeight="SemiBold"
+                             HorizontalAlignment="Center"
+                             Margin="0,0,0,30"/>
+
+                    <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+                        <Grid Margin="0,0,0,30">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                     Text="Minutes per day:"
+                                     Foreground="White"
+                                     VerticalAlignment="Center"
+                                     Margin="0,0,15,0"/>
+
+                            <Slider Grid.Column="1"
+                                  Value="{Binding MinutesPerDay}"
+                                  Minimum="5" Maximum="60"
+                                  TickFrequency="5"
+                                  IsSnapToTickEnabled="True"/>
+
+                            <TextBlock Grid.Column="2"
+                                     Text="{Binding MinutesPerDay}"
+                                     Foreground="#00FFFF"
+                                     FontSize="20"
+                                     FontWeight="Bold"
+                                     VerticalAlignment="Center"
+                                     Margin="15,0,0,0"/>
+                        </Grid>
+
+                        <TextBlock Text="Preferred practice times:"
+                                 Foreground="White"
+                                 FontSize="16"
+                                 Margin="0,0,0,15"/>
+
+                        <WrapPanel HorizontalAlignment="Center">
+                            <CheckBox Content="Morning (6am-12pm)" Foreground="White" Margin="10,5"/>
+                            <CheckBox Content="Afternoon (12pm-6pm)" Foreground="White" Margin="10,5"/>
+                            <CheckBox Content="Evening (6pm-10pm)" Foreground="White" Margin="10,5"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Navigation Buttons -->
+        <Border Grid.Row="3" Background="#0F0F1E" Padding="30">
+            <Grid>
+                <Button HorizontalAlignment="Left"
+                      Content="← Back"
+                      Command="{Binding BackCommand}"
+                      Visibility="{Binding CanGoBack,
+                                 Converter={StaticResource BoolToVisibilityConverter}}"
+                      Width="100" Height="40"
+                      Background="#333344"
+                      Foreground="White"
+                      BorderThickness="0">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="8" Background="{TemplateBinding Background}">
+                                <TextBlock Text="{TemplateBinding Content}"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Foreground="{TemplateBinding Foreground}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button HorizontalAlignment="Right"
+                      Content="{Binding NextButtonText}"
+                      Command="{Binding NextCommand}"
+                      Width="150" Height="40"
+                      BorderThickness="0">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="8">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="#00FFFF" Offset="0"/>
+                                        <GradientStop Color="#0088FF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <TextBlock Text="{TemplateBinding Content}"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Foreground="White"
+                                         FontWeight="Bold"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

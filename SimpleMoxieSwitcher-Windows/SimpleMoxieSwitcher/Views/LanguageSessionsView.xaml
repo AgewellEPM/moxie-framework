@@ -1,0 +1,410 @@
+<UserControl x:Class="SimpleMoxieSwitcher.Views.LanguageSessionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="1200">
+
+    <Grid Background="#1A1A1A">
+        <!-- Background Gradient -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#1A1A1A" Offset="0"/>
+                <GradientStop Color="#3A2A5A" Offset="0.5"/>
+                <GradientStop Color="#2A1A4A" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="#33000000"
+                    Padding="30,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Active Language Sessions"
+                                 FontSize="32"
+                                 FontWeight="Bold"
+                                 Foreground="White"/>
+                        <TextBlock Text="{Binding SessionSummary}"
+                                 FontSize="14"
+                                 Foreground="#AAAAAA"
+                                 Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <!-- Quick Stats -->
+                    <StackPanel Grid.Column="1"
+                              Orientation="Horizontal">
+                        <Border Background="#22FFFFFF"
+                              CornerRadius="10"
+                              Padding="15,10"
+                              Margin="10,0">
+                            <StackPanel>
+                                <TextBlock Text="{Binding TotalMinutesToday}"
+                                         FontSize="24"
+                                         FontWeight="Bold"
+                                         Foreground="#00CED1"
+                                         HorizontalAlignment="Center"/>
+                                <TextBlock Text="Minutes Today"
+                                         FontSize="12"
+                                         Foreground="#AAAAAA"
+                                         HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#22FFFFFF"
+                              CornerRadius="10"
+                              Padding="15,10"
+                              Margin="10,0">
+                            <StackPanel>
+                                <TextBlock Text="{Binding CurrentStreak}"
+                                         FontSize="24"
+                                         FontWeight="Bold"
+                                         Foreground="#FFD700"
+                                         HorizontalAlignment="Center"/>
+                                <TextBlock Text="Day Streak"
+                                         FontSize="12"
+                                         Foreground="#AAAAAA"
+                                         HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Main Content -->
+            <ScrollViewer Grid.Row="1"
+                        VerticalScrollBarVisibility="Auto">
+                <Grid Margin="30">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Current Active Session -->
+                    <Border Grid.Row="0"
+                          Background="#33000000"
+                          BorderBrush="#00CED1"
+                          BorderThickness="2"
+                          CornerRadius="20"
+                          Padding="30"
+                          Margin="0,0,0,30"
+                          Visibility="{Binding HasActiveSession, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="NOW LEARNING"
+                                         FontSize="12"
+                                         FontWeight="Bold"
+                                         Foreground="#00CED1"
+                                         Margin="0,0,0,10"/>
+
+                                <StackPanel Orientation="Horizontal"
+                                          Margin="0,0,0,15">
+                                    <Image Source="{Binding ActiveLanguageFlag}"
+                                         Width="40"
+                                         Height="30"
+                                         Margin="0,0,15,0"/>
+                                    <TextBlock Text="{Binding ActiveLanguageName}"
+                                             FontSize="28"
+                                             FontWeight="Bold"
+                                             Foreground="White"/>
+                                </StackPanel>
+
+                                <TextBlock Text="{Binding CurrentLessonName}"
+                                         FontSize="18"
+                                         Foreground="White"
+                                         Margin="0,0,0,10"/>
+
+                                <ProgressBar Value="{Binding SessionProgress}"
+                                           Maximum="100"
+                                           Height="10"
+                                           Foreground="#00CED1"
+                                           Background="#333333"
+                                           Margin="0,0,0,5"/>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="⏱️"
+                                             Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding SessionDuration}"
+                                             Foreground="#AAAAAA"/>
+                                    <TextBlock Text=" • "
+                                             Foreground="#666666"
+                                             Margin="10,0"/>
+                                    <TextBlock Text="📊"
+                                             Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding CorrectAnswers}"
+                                             Foreground="#2ECC71"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1"
+                                      VerticalAlignment="Center">
+                                <Button Content="Continue Session"
+                                      Command="{Binding ContinueSessionCommand}"
+                                      Style="{StaticResource AccentButtonStyle}"
+                                      Padding="20,10"
+                                      Margin="0,0,0,10"/>
+
+                                <Button Content="End Session"
+                                      Command="{Binding EndSessionCommand}"
+                                      Padding="20,10"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Scheduled Sessions -->
+                    <StackPanel Grid.Row="1">
+                        <TextBlock Text="Today's Schedule"
+                                 FontSize="24"
+                                 FontWeight="Bold"
+                                 Foreground="White"
+                                 Margin="0,0,0,20"/>
+
+                        <ItemsControl ItemsSource="{Binding TodaysSessions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#22FFFFFF"
+                                          CornerRadius="15"
+                                          Padding="20"
+                                          Margin="0,0,0,15">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Time -->
+                                            <Border Grid.Column="0"
+                                                  Background="{Binding StatusColor}"
+                                                  CornerRadius="10"
+                                                  Padding="15,10"
+                                                  Margin="0,0,20,0">
+                                                <TextBlock Text="{Binding Time}"
+                                                         FontSize="18"
+                                                         FontWeight="Bold"
+                                                         Foreground="White"/>
+                                            </Border>
+
+                                            <!-- Flag -->
+                                            <Image Grid.Column="1"
+                                                 Source="{Binding LanguageFlag}"
+                                                 Width="40"
+                                                 Height="30"
+                                                 Margin="0,0,20,0"
+                                                 VerticalAlignment="Center"/>
+
+                                            <!-- Session Details -->
+                                            <StackPanel Grid.Column="2"
+                                                      VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding LanguageName}"
+                                                         FontSize="18"
+                                                         FontWeight="SemiBold"
+                                                         Foreground="White"/>
+                                                <TextBlock Text="{Binding LessonType}"
+                                                         FontSize="14"
+                                                         Foreground="#AAAAAA"/>
+                                                <StackPanel Orientation="Horizontal"
+                                                          Margin="0,5,0,0">
+                                                    <TextBlock Text="Duration: "
+                                                             Foreground="#666666"
+                                                             FontSize="12"/>
+                                                    <TextBlock Text="{Binding Duration}"
+                                                             Foreground="#666666"
+                                                             FontSize="12"/>
+                                                    <TextBlock Text=" • Level: "
+                                                             Foreground="#666666"
+                                                             FontSize="12"
+                                                             Margin="10,0,0,0"/>
+                                                    <TextBlock Text="{Binding Level}"
+                                                             Foreground="#666666"
+                                                             FontSize="12"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <!-- Action -->
+                                            <Button Grid.Column="3"
+                                                  Content="{Binding ActionButtonText}"
+                                                  Command="{Binding DataContext.SessionActionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                  CommandParameter="{Binding}"
+                                                  IsEnabled="{Binding IsActionEnabled}"
+                                                  Padding="15,8"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Empty State -->
+                        <Border Visibility="{Binding NoSessionsToday, Converter={StaticResource BoolToVisibilityConverter}}"
+                              Background="#22FFFFFF"
+                              CornerRadius="15"
+                              Padding="40"
+                              HorizontalAlignment="Center">
+                            <StackPanel>
+                                <TextBlock Text="📅"
+                                         FontSize="48"
+                                         HorizontalAlignment="Center"
+                                         Margin="0,0,0,15"/>
+                                <TextBlock Text="No sessions scheduled for today"
+                                         FontSize="16"
+                                         Foreground="White"
+                                         HorizontalAlignment="Center"/>
+                                <Button Content="Schedule a Session"
+                                      Command="{Binding ScheduleSessionCommand}"
+                                      HorizontalAlignment="Center"
+                                      Padding="20,10"
+                                      Margin="0,20,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Recent Sessions -->
+                    <StackPanel Grid.Row="2"
+                              Margin="0,40,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                     Text="Recent Sessions"
+                                     FontSize="24"
+                                     FontWeight="Bold"
+                                     Foreground="White"/>
+
+                            <Button Grid.Column="1"
+                                  Content="View All History"
+                                  Command="{Binding ViewAllHistoryCommand}"
+                                  Padding="15,8"/>
+                        </Grid>
+
+                        <ItemsControl ItemsSource="{Binding RecentSessions}"
+                                    Margin="0,20,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#1A2ECC71"
+                                          BorderBrush="#2ECC71"
+                                          BorderThickness="1"
+                                          CornerRadius="10"
+                                          Padding="15"
+                                          Margin="0,5">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                 Source="{Binding LanguageFlag}"
+                                                 Width="30"
+                                                 Height="20"
+                                                 Margin="0,0,15,0"/>
+
+                                            <StackPanel Grid.Column="1">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding LanguageName}"
+                                                             FontSize="16"
+                                                             FontWeight="SemiBold"
+                                                             Foreground="White"/>
+                                                    <TextBlock Text=" - "
+                                                             Foreground="#666666"
+                                                             Margin="5,0"/>
+                                                    <TextBlock Text="{Binding LessonName}"
+                                                             FontSize="16"
+                                                             Foreground="White"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal"
+                                                          Margin="0,5,0,0">
+                                                    <TextBlock Text="{Binding Date}"
+                                                             FontSize="12"
+                                                             Foreground="#AAAAAA"/>
+                                                    <TextBlock Text=" • "
+                                                             Foreground="#666666"
+                                                             Margin="5,0"/>
+                                                    <TextBlock Text="{Binding Duration}"
+                                                             FontSize="12"
+                                                             Foreground="#AAAAAA"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="2"
+                                                      Orientation="Horizontal">
+                                                <StackPanel Margin="0,0,20,0">
+                                                    <TextBlock Text="{Binding Score}"
+                                                             FontSize="20"
+                                                             FontWeight="Bold"
+                                                             Foreground="#FFD700"
+                                                             HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="Score"
+                                                             FontSize="10"
+                                                             Foreground="#AAAAAA"
+                                                             HorizontalAlignment="Center"/>
+                                                </StackPanel>
+
+                                                <Button Content="Review"
+                                                      Command="{Binding DataContext.ReviewSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                      CommandParameter="{Binding}"
+                                                      Padding="10,5"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- Floating Action Button -->
+            <Button Grid.Row="1"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Bottom"
+                  Margin="30"
+                  Width="60"
+                  Height="60"
+                  Command="{Binding NewSessionCommand}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Ellipse Fill="#9B59B6">
+                                <Ellipse.Effect>
+                                    <DropShadowEffect Color="Black"
+                                                    BlurRadius="10"
+                                                    ShadowDepth="3"
+                                                    Opacity="0.5"/>
+                                </Ellipse.Effect>
+                            </Ellipse>
+                            <TextBlock Text="+"
+                                     FontSize="32"
+                                     FontWeight="Light"
+                                     Foreground="White"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

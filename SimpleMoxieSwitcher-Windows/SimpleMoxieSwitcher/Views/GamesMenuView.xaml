@@ -1,0 +1,172 @@
+<Window x:Class="SimpleMoxieSwitcher.Views.GamesMenuView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Games Menu"
+        Height="600" Width="900"
+        WindowStartupLocation="CenterOwner"
+        Background="#1A1A2E">
+
+    <Window.Resources>
+        <!-- Game Card Animation -->
+        <Storyboard x:Key="GameCardHover">
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                           To="1.05" Duration="0:0:0.2"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                           To="1.05" Duration="0:0:0.2"/>
+            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[1].(RotateTransform.Angle)"
+                           To="2" Duration="0:0:0.3" AutoReverse="True"/>
+        </Storyboard>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#0F0F1E" Padding="30">
+            <Grid>
+                <TextBlock Text="🎮 Games Menu"
+                         Foreground="White"
+                         FontSize="28"
+                         FontWeight="Bold"
+                         HorizontalAlignment="Center">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="#FF00FF" BlurRadius="15" Opacity="0.5" ShadowDepth="0"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+
+                <Button Content="✕"
+                      Click="CloseButton_Click"
+                      HorizontalAlignment="Right"
+                      Width="30" Height="30"
+                      Background="Transparent"
+                      Foreground="White"
+                      BorderThickness="0"/>
+            </Grid>
+        </Border>
+
+        <!-- Games Grid -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Games}" Margin="40">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Command="{Binding PlayCommand}"
+                              Margin="15"
+                              Background="Transparent"
+                              BorderThickness="0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="GameCard"
+                                          Width="250" Height="300"
+                                          CornerRadius="20"
+                                          RenderTransformOrigin="0.5,0.5">
+                                        <Border.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform/>
+                                                <RotateTransform/>
+                                            </TransformGroup>
+                                        </Border.RenderTransform>
+
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="{Binding GradientStart}" Offset="0"/>
+                                                <GradientStop Color="{Binding GradientEnd}" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+
+                                        <Border.Effect>
+                                            <DropShadowEffect Color="{Binding GlowColor}"
+                                                            BlurRadius="20"
+                                                            Opacity="0.6"
+                                                            ShadowDepth="5"/>
+                                        </Border.Effect>
+
+                                        <Grid>
+                                            <!-- Shine Effect -->
+                                            <Border CornerRadius="20">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0.5,1">
+                                                        <GradientStop Color="#44FFFFFF" Offset="0"/>
+                                                        <GradientStop Color="Transparent" Offset="0.5"/>
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                            </Border>
+
+                                            <!-- Content -->
+                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding Icon}"
+                                                         FontSize="80"
+                                                         HorizontalAlignment="Center"
+                                                         Margin="0,0,0,20">
+                                                    <TextBlock.Effect>
+                                                        <DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="5" ShadowDepth="2"/>
+                                                    </TextBlock.Effect>
+                                                </TextBlock>
+
+                                                <TextBlock Text="{Binding Name}"
+                                                         Foreground="White"
+                                                         FontSize="22"
+                                                         FontWeight="Bold"
+                                                         HorizontalAlignment="Center"
+                                                         Margin="0,0,0,10"/>
+
+                                                <TextBlock Text="{Binding Description}"
+                                                         Foreground="#CCFFFFFF"
+                                                         FontSize="14"
+                                                         TextWrapping="Wrap"
+                                                         TextAlignment="Center"
+                                                         MaxWidth="200"
+                                                         Margin="0,0,0,15"/>
+
+                                                <Border Background="#33FFFFFF"
+                                                      CornerRadius="15"
+                                                      Padding="20,8"
+                                                      HorizontalAlignment="Center">
+                                                    <TextBlock Text="PLAY"
+                                                             Foreground="White"
+                                                             FontWeight="Bold"
+                                                             FontSize="16"/>
+                                                </Border>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Trigger.EnterActions>
+                                                <BeginStoryboard Storyboard="{StaticResource GameCardHover}"/>
+                                            </Trigger.EnterActions>
+                                            <Trigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                                                                       To="1" Duration="0:0:0.2"/>
+                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                                                                       To="1" Duration="0:0:0.2"/>
+                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TransformGroup.Children)[1].(RotateTransform.Angle)"
+                                                                       To="0" Duration="0:0:0.2"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.ExitActions>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</Window>

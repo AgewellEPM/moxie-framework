@@ -1,0 +1,408 @@
+<UserControl x:Class="SimpleMoxieSwitcher.Views.ConversationLogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="1200">
+
+    <UserControl.Resources>
+        <!-- Message Bubble Style -->
+        <Style x:Key="MessageBubbleStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="15"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="Margin" Value="10,5"/>
+            <Setter Property="MaxWidth" Value="500"/>
+        </Style>
+
+        <!-- Timestamp Style -->
+        <Style x:Key="TimestampStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="#888888"/>
+            <Setter Property="Margin" Value="15,2,15,5"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="#1A1A1A">
+        <!-- Background Gradient -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#1A1A1A" Offset="0"/>
+                <GradientStop Color="#2A1A3A" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="#22000000"
+                    BorderBrush="#333333"
+                    BorderThickness="0,0,0,1">
+                <Grid Height="80">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Back Button and Title -->
+                    <StackPanel Grid.Column="0"
+                              Orientation="Horizontal"
+                              Margin="20,0">
+                        <Button Content="←"
+                              FontSize="20"
+                              Command="{Binding GoBackCommand}"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              Foreground="White"
+                              Padding="10"
+                              Margin="0,0,10,0"/>
+
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding ConversationTitle}"
+                                     FontSize="24"
+                                     FontWeight="Bold"
+                                     Foreground="White"/>
+                            <TextBlock Text="{Binding ConversationDate}"
+                                     FontSize="14"
+                                     Foreground="#AAAAAA"
+                                     Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Conversation Info -->
+                    <StackPanel Grid.Column="1"
+                              Orientation="Horizontal"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center">
+                        <Border Background="#33FFFFFF"
+                              CornerRadius="15"
+                              Padding="10,5"
+                              Margin="5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="👤" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding ParticipantName}"
+                                         Foreground="White"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#33FFFFFF"
+                              CornerRadius="15"
+                              Padding="10,5"
+                              Margin="5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="⏱️" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding Duration}"
+                                         Foreground="White"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#33FFFFFF"
+                              CornerRadius="15"
+                              Padding="10,5"
+                              Margin="5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="💬" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding MessageCount}"
+                                         Foreground="White"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Actions -->
+                    <StackPanel Grid.Column="2"
+                              Orientation="Horizontal"
+                              Margin="20,0">
+                        <Button Content="🔍"
+                              ToolTip="Search"
+                              Command="{Binding SearchCommand}"
+                              Width="40"
+                              Height="40"
+                              Margin="5,0"
+                              Background="Transparent"
+                              BorderBrush="#666666"
+                              Foreground="White"/>
+
+                        <Button Content="📤"
+                              ToolTip="Export"
+                              Command="{Binding ExportCommand}"
+                              Width="40"
+                              Height="40"
+                              Margin="5,0"
+                              Background="Transparent"
+                              BorderBrush="#666666"
+                              Foreground="White"/>
+
+                        <Button Content="🗑️"
+                              ToolTip="Delete"
+                              Command="{Binding DeleteCommand}"
+                              Width="40"
+                              Height="40"
+                              Margin="5,0"
+                              Background="Transparent"
+                              BorderBrush="#FF4444"
+                              Foreground="#FF4444"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Messages ScrollViewer -->
+            <ScrollViewer Grid.Row="1"
+                        VerticalScrollBarVisibility="Auto"
+                        x:Name="MessagesScrollViewer">
+                <ItemsControl ItemsSource="{Binding Messages}"
+                            Margin="20">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- User Message -->
+                                <StackPanel Grid.Column="0"
+                                          HorizontalAlignment="Left"
+                                          Visibility="{Binding IsUserMessage, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Border Background="#2A4A8A"
+                                          Style="{StaticResource MessageBubbleStyle}"
+                                          HorizontalAlignment="Left">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Text}"
+                                                     TextWrapping="Wrap"
+                                                     Foreground="White"/>
+
+                                            <!-- Emotion Indicator -->
+                                            <TextBlock Text="{Binding EmotionEmoji}"
+                                                     FontSize="20"
+                                                     HorizontalAlignment="Right"
+                                                     Margin="0,5,0,0"
+                                                     Visibility="{Binding HasEmotion, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <TextBlock Text="{Binding Timestamp}"
+                                             Style="{StaticResource TimestampStyle}"
+                                             HorizontalAlignment="Left"/>
+                                </StackPanel>
+
+                                <!-- Moxie Message -->
+                                <StackPanel Grid.Column="1"
+                                          HorizontalAlignment="Right"
+                                          Visibility="{Binding IsMoxieMessage, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Border Background="#00CED1"
+                                          Style="{StaticResource MessageBubbleStyle}"
+                                          HorizontalAlignment="Right">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Text}"
+                                                     TextWrapping="Wrap"
+                                                     Foreground="Black"/>
+
+                                            <!-- Action Indicator -->
+                                            <Border Background="#22000000"
+                                                  CornerRadius="8"
+                                                  Padding="8,4"
+                                                  Margin="0,8,0,0"
+                                                  HorizontalAlignment="Left"
+                                                  Visibility="{Binding HasAction, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <TextBlock Text="{Binding ActionText}"
+                                                         FontSize="11"
+                                                         FontStyle="Italic"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+                                    <TextBlock Text="{Binding Timestamp}"
+                                             Style="{StaticResource TimestampStyle}"
+                                             HorizontalAlignment="Right"/>
+                                </StackPanel>
+
+                                <!-- System Message -->
+                                <Border Grid.Column="0"
+                                      Grid.ColumnSpan="2"
+                                      Background="#33FFFFFF"
+                                      CornerRadius="10"
+                                      Padding="10,5"
+                                      HorizontalAlignment="Center"
+                                      Margin="20,5"
+                                      Visibility="{Binding IsSystemMessage, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <TextBlock Text="{Binding Text}"
+                                             TextAlignment="Center"
+                                             Foreground="#AAAAAA"
+                                             FontStyle="Italic"/>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Search Bar (Hidden by default) -->
+            <Border Grid.Row="1"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Stretch"
+                    Background="#EE1A1A1A"
+                    CornerRadius="10"
+                    Margin="40,20"
+                    Padding="15"
+                    Visibility="{Binding SearchBarVisibility}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Grid.Column="0"
+                           Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                           Background="#33FFFFFF"
+                           Foreground="White"
+                           BorderThickness="0"
+                           Padding="10,5"
+                           VerticalAlignment="Center"/>
+
+                    <TextBlock Grid.Column="1"
+                             Text="{Binding SearchResultText}"
+                             Foreground="#AAAAAA"
+                             VerticalAlignment="Center"
+                             Margin="10,0"/>
+
+                    <Button Grid.Column="2"
+                          Content="✕"
+                          Command="{Binding CloseSearchCommand}"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          Foreground="White"
+                          Padding="10,5"/>
+                </Grid>
+            </Border>
+
+            <!-- Analysis Panel -->
+            <Border Grid.Row="2"
+                    Background="#22000000"
+                    BorderBrush="#333333"
+                    BorderThickness="0,1,0,0">
+                <Grid Height="120">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Sentiment Analysis -->
+                    <Border Grid.Column="0"
+                          Background="#1A000000"
+                          CornerRadius="10"
+                          Margin="10"
+                          Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="Sentiment"
+                                     Foreground="#AAAAAA"
+                                     FontSize="12"
+                                     Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding OverallSentiment}"
+                                     FontSize="24"
+                                     HorizontalAlignment="Center"/>
+                            <ProgressBar Value="{Binding SentimentScore}"
+                                       Maximum="100"
+                                       Height="4"
+                                       Foreground="#00CED1"
+                                       Background="#333333"
+                                       Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Engagement Level -->
+                    <Border Grid.Column="1"
+                          Background="#1A000000"
+                          CornerRadius="10"
+                          Margin="10"
+                          Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="Engagement"
+                                     Foreground="#AAAAAA"
+                                     FontSize="12"
+                                     Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding EngagementLevel}"
+                                     FontSize="18"
+                                     FontWeight="Bold"
+                                     Foreground="#00FF00"
+                                     HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding EngagementDescription}"
+                                     FontSize="11"
+                                     Foreground="#AAAAAA"
+                                     TextAlignment="Center"
+                                     Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Topics Discussed -->
+                    <Border Grid.Column="2"
+                          Background="#1A000000"
+                          CornerRadius="10"
+                          Margin="10"
+                          Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="Topics"
+                                     Foreground="#AAAAAA"
+                                     FontSize="12"
+                                     Margin="0,0,0,5"/>
+                            <ItemsControl ItemsSource="{Binding TopTopics}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#22FFFFFF"
+                                              CornerRadius="10"
+                                              Padding="5,2"
+                                              Margin="2">
+                                            <TextBlock Text="{Binding}"
+                                                     FontSize="11"
+                                                     Foreground="White"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Learning Progress -->
+                    <Border Grid.Column="3"
+                          Background="#1A000000"
+                          CornerRadius="10"
+                          Margin="10"
+                          Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="Learning"
+                                     Foreground="#AAAAAA"
+                                     FontSize="12"
+                                     Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding LearningPoints}"
+                                     FontSize="24"
+                                     FontWeight="Bold"
+                                     Foreground="#FFD700"
+                                     HorizontalAlignment="Center"/>
+                            <TextBlock Text="points earned"
+                                     FontSize="11"
+                                     Foreground="#AAAAAA"
+                                     HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding SkillsImproved}"
+                                     FontSize="11"
+                                     Foreground="#00FF00"
+                                     TextAlignment="Center"
+                                     Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

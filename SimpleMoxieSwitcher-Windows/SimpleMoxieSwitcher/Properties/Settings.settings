@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SimpleMoxieSwitcher.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="MoxieEndpoint" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://localhost:8003/hive/endpoint/</Value>
+    </Setting>
+    <Setting Name="MqttBroker" Type="System.String" Scope="User">
+      <Value Profile="(Default)">localhost:1883</Value>
+    </Setting>
+    <Setting Name="MqttTopic" Type="System.String" Scope="User">
+      <Value Profile="(Default)">openmoxie/chat</Value>
+    </Setting>
+    <Setting Name="EnableNotifications" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="EnableSafetyMonitoring" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="EnableMemoryExtraction" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="HasCompletedSetup" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="SmartHomeDevices" Type="System.String" Scope="User">
+      <Value Profile="(Default)">[]</Value>
+    </Setting>
+    <Setting Name="ParentPINHash" Type="System.String" Scope="User">
+      <Value Profile="(Default)"></Value>
+    </Setting>
+    <Setting Name="CurrentLanguageCode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">en</Value>
+    </Setting>
+    <Setting Name="CurrentLanguageName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">English</Value>
+    </Setting>
+    <Setting Name="AIProvider" Type="System.String" Scope="User">
+      <Value Profile="(Default)">openai</Value>
+    </Setting>
+    <Setting Name="AIModel" Type="System.String" Scope="User">
+      <Value Profile="(Default)">gpt-4o-mini</Value>
+    </Setting>
+    <Setting Name="OpenAIKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)"></Value>
+    </Setting>
+    <Setting Name="AnthropicKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)"></Value>
+    </Setting>
+    <Setting Name="DeepSeekKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)"></Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
