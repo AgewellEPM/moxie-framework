@@ -1,4 +1,4 @@
-# Moxie Companion App Framework
+# OpenMoxie 2.0 Companion App Framework
 
 A cross-platform framework for building companion applications for interactive robots and AI assistants. This is the open-source base framework - developers need to add their own AI model integrations and content.
 
@@ -151,5 +151,9 @@ This is a framework/template. Developers are responsible for:
 - Managing API keys and credentials securely
 
 ---
+## Thank You
+jbeghtol Justin Beghtol
+Who Founded The Open Moxie Project, Wuthout him this would not exist.
+Orginal OpenMoxie: https://github.com/jbeghtol/openmoxie
 
 **Note**: This is the base framework only. AI models, API keys, and proprietary content systems have been removed for public distribution.
